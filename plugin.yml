@@ -1,0 +1,12 @@
+name: OhSh_t
+
+main: org.selurgniman.bukkit.ohsh_t.OhSh_t
+
+version: 0.1
+
+database: true
+
+commands:
+    ohshit:
+        description: lists the items you dropped at your last death
+        usage: /ohshit [list|credits|claim]
