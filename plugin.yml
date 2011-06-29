@@ -2,7 +2,7 @@ name: OhSh_t
 
 main: org.selurgniman.bukkit.ohsh_t.OhSh_t
 
-version: 0.1
+version: 0.2
 
 database: true
 
