@@ -14,7 +14,6 @@ import java.util.logging.Logger;
 
 import javax.persistence.PersistenceException;
 
-import org.anjocaido.groupmanager.GroupManager;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -40,13 +39,15 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.config.Configuration;
 
+import com.nijikokun.bukkit.Permissions.Permissions;
+
 public class OhSh_t extends JavaPlugin {
 	private final Logger log = Logger.getLogger("Minecraft");
 	private static final LinkedHashMap<String, String> CONFIG_DEFAULTS = new LinkedHashMap<String, String>();
 
 	private Hashtable<Player, List<ItemStack>> playerItems = new Hashtable<Player, List<ItemStack>>();
 	private Configuration config = null;
-	private GroupManager gm = null;
+	private Permissions permissions = null;
 	private JavaPlugin plugin = null;
 	static {
 		CONFIG_DEFAULTS.put("credits", "1");
@@ -81,7 +82,7 @@ public class OhSh_t extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
-		gm.getWorldsHolder().saveChanges();
+		permissions.getHandler().saveAll();
 		log.info(config.getString("prefix") + config.getString("prefix") + " disabled.");
 	}
 
@@ -149,8 +150,7 @@ public class OhSh_t extends JavaPlugin {
 							if (args.length > 1) {
 								if (args[1].toUpperCase().equals("ADD")) {
 									if (args.length > 2) {
-										if (gm.getWorldsHolder().getWorldPermissions(player)
-												.has(player, "ohshit.credits.add")) {
+										if (permissions.getHandler().has(player.getWorld().getName(), player.getName(),"ohshit.credits.add")) {
 											addAvailableCredits(player, Integer.parseInt(args[2]));
 										} else {
 											messages.add(config.getString("prefix")
@@ -262,12 +262,12 @@ public class OhSh_t extends JavaPlugin {
 	}
 
 	private void setupPermissions() {
-		Plugin p = this.getServer().getPluginManager().getPlugin("GroupManager");
+		Plugin p = this.getServer().getPluginManager().getPlugin("Permissions");
 		if (p != null) {
 			if (!this.getServer().getPluginManager().isPluginEnabled(p)) {
 				this.getServer().getPluginManager().enablePlugin(p);
 			}
-			this.gm = (GroupManager) p;
+			this.permissions = (Permissions) p;
 		} else {
 			this.getPluginLoader().disablePlugin(this);
 		}
