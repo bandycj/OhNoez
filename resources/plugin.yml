@@ -1,12 +1,22 @@
-name: OhSh_t
+name: OhNoez
 
-main: org.selurgniman.bukkit.ohsh_t.OhSh_t
+main: org.selurgniman.bukkit.ohnoez.OhNoez
 
-version: 0.2
+version: 0.5
 
 database: true
 
 commands:
-    ohshit:
+    ohnoez:
         description: lists the items you dropped at your last death
-        usage: /ohshit [list|credits|claim]
+        usage: /ohnoez [list|credits|claim]
+        
+permissions:
+    ohnoez.*:
+        description: OhNoez master permission
+        defaulit: false
+        children:
+            ohnoez.credits.adjust: true
+    ohnoez.credits.adjust:
+        description: Allows access to credit adjustment commands
+        default: false

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.selurgniman.bukkit.ohsh_t;
+package org.selurgniman.bukkit.ohnoez;
 
 import java.util.Date;
 

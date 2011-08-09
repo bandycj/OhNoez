@@ -1,7 +1,8 @@
+package org.selurgniman.bukkit.ohnoez;
+
 /**
  * 
  */
-package org.selurgniman.bukkit.ohsh_t;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -33,37 +34,29 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityListener;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.config.Configuration;
 
-import com.nijikokun.bukkit.Permissions.Permissions;
-
-public class OhSh_t extends JavaPlugin {
+public class OhNoez extends JavaPlugin
+{
 	private final Logger log = Logger.getLogger("Minecraft");
 	private static final LinkedHashMap<String, String> CONFIG_DEFAULTS = new LinkedHashMap<String, String>();
 
 	private Hashtable<Player, List<ItemStack>> playerItems = new Hashtable<Player, List<ItemStack>>();
 	private Configuration config = null;
-	private Permissions permissions = null;
 	private JavaPlugin plugin = null;
-	static {
+	static
+	{
+		CONFIG_DEFAULTS.put("frequency", "86400");
 		CONFIG_DEFAULTS.put("credits", "1");
-		CONFIG_DEFAULTS.put("prefix", ChatColor.RED + "OhSh_T: " + ChatColor.WHITE);
+		CONFIG_DEFAULTS.put("prefix", ChatColor.RED + "OhNoez: " + ChatColor.WHITE);
 		CONFIG_DEFAULTS.put("LIST_ITEM_MESSAGE", "%1$s(" + ChatColor.GREEN + "%2$d" + ChatColor.WHITE + ")");
 		CONFIG_DEFAULTS.put("NO_ITEMS_MESSAGE", "No dropped items to list!");
-		CONFIG_DEFAULTS.put("AVAILABLE_CREDITS_MESSAGE", "Available credits ("
-				+ ChatColor.GREEN
-				+ "%1$d"
-				+ ChatColor.WHITE
-				+ ").");
+		CONFIG_DEFAULTS.put("AVAILABLE_CREDITS_MESSAGE", "Available credits (" + ChatColor.GREEN + "%1$d" + ChatColor.WHITE + ").");
 		CONFIG_DEFAULTS.put("CREDITED_BACK_MESSAGE", "%1$s(" + ChatColor.GREEN + "%2$d" + ChatColor.WHITE + ")");
-		CONFIG_DEFAULTS.put("CREDITED_USED_MESSAGE", ChatColor.RED
-				+ "%1$s"
-				+ ChatColor.WHITE
-				+ " just used an OhSh_t credit for the day!");
+		CONFIG_DEFAULTS.put("CREDITED_USED_MESSAGE", ChatColor.RED + "%1$s" + ChatColor.WHITE + " just used an OhNoez credit for the day!");
 		CONFIG_DEFAULTS.put("OTHER_PLAYER_DEATH_MESSAGE", ChatColor.AQUA
 				+ "%1$s "
 				+ ChatColor.WHITE
@@ -72,24 +65,19 @@ public class OhSh_t extends JavaPlugin {
 				+ "%2$s"
 				+ ChatColor.WHITE
 				+ " %3$d blocks from you!");
-		CONFIG_DEFAULTS.put("PLAYER_DEATH_MESSAGE", ChatColor.AQUA
-				+ "You"
-				+ ChatColor.WHITE
-				+ " died "
-				+ ChatColor.RED
-				+ "%1$s!");
+		CONFIG_DEFAULTS.put("PLAYER_DEATH_MESSAGE", ChatColor.AQUA + "You" + ChatColor.WHITE + " died " + ChatColor.RED + "%1$s!");
 	}
 
 	@Override
-	public void onDisable() {
-		permissions.getHandler().saveAll();
-		log.info(config.getString("prefix") + config.getString("prefix") + " disabled.");
+	public void onDisable()
+	{
+		log.info(config.getString("prefix") + " disabled.");
 	}
 
 	@Override
-	public void onEnable() {
+	public void onEnable()
+	{
 		this.plugin = this;
-		setupPermissions();
 		loadConfig();
 		setupDatabase();
 
@@ -98,47 +86,59 @@ public class OhSh_t extends JavaPlugin {
 		pm.registerEvent(Event.Type.ENTITY_DAMAGE, listener, Priority.Normal, this);
 		pm.registerEvent(Event.Type.ENTITY_DEATH, listener, Priority.Normal, this);
 
-		this.getCommand("ohshit").setExecutor(new CommandExecutor() {
+		this.getCommand("ohnoez").setExecutor(new CommandExecutor()
+		{
 			@Override
-			public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-				if (sender instanceof Player) {
+			public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
+			{
+				if (sender instanceof Player)
+				{
 					Player player = (Player) sender;
-					if (args.length > 0) {
+					if (args.length > 0)
+					{
 						List<ItemStack> droppedItems = playerItems.get(player);
 						ArrayList<String> messages = new ArrayList<String>();
 						/*
 						 * List items dropped from the last death
 						 */
-						if (args[0].toUpperCase().equals("LIST")) {
-							if (droppedItems != null) {
-								for (ItemStack itemStack : droppedItems) {
+						if (args[0].toUpperCase().equals("LIST"))
+						{
+							if (droppedItems != null)
+							{
+								for (ItemStack itemStack : droppedItems)
+								{
 									String itemTypeName = itemStack.getType().toString();
-									if (itemStack.getType() == Material.INK_SACK) {
-										switch (itemStack.getDurability()) {
-										case 0xF: {
+									if (itemStack.getType() == Material.INK_SACK)
+									{
+										switch (itemStack.getDurability())
+										{
+										case 0xF:
+										{
 											itemTypeName = "BONEMEAL";
 											break;
 										}
-										case 0x4: {
+										case 0x4:
+										{
 											itemTypeName = "LAPIS_LAZULI";
 											break;
 										}
-										case 0x3: {
+										case 0x3:
+										{
 											itemTypeName = "COCOA_BEANS";
 											break;
 										}
-										case 0x1: {
+										case 0x1:
+										{
 											itemTypeName = "ROSES";
 											break;
 										}
 										}
 									}
-									messages.add(String.format(
-											config.getString("prefix") + config.getString("LIST_ITEM_MESSAGE") + "\n",
-											itemTypeName,
-											itemStack.getAmount()));
+									messages.add(String.format(config.getString("prefix") + config.getString("LIST_ITEM_MESSAGE") + "\n", itemTypeName, itemStack.getAmount()));
 								}
-							} else {
+							}
+							else
+							{
 								messages.add(config.getString("prefix") + config.getString("NO_ITEMS_MESSAGE"));
 							}
 						}
@@ -146,54 +146,84 @@ public class OhSh_t extends JavaPlugin {
 						/*
 						 * Credit listing
 						 */
-						if (args[0].toUpperCase().equals("CREDITS")) {
-							if (args.length > 1) {
-								if (args[1].toUpperCase().equals("ADD")) {
-									if (args.length > 2) {
-										if (permissions.getHandler().has(player.getWorld().getName(), player.getName(),"ohshit.credits.add")) {
+						else if (args[0].toUpperCase().equals("CREDITS"))
+						{
+							if (args.length > 1)
+							{
+								if (args[1].toUpperCase().equals("ADD"))
+								{
+									if (args.length > 2)
+									{
+
+										if (player.hasPermission("ohshit.credits.adjust"))
+										{
 											addAvailableCredits(player, Integer.parseInt(args[2]));
-										} else {
-											messages.add(config.getString("prefix")
-													+ config.getString("prefix")
-													+ "syntax error: /ohshit credits add #");
 										}
+
+									}
+									else
+									{
+										messages.add(config.getString("prefix") + config.getString("prefix") + "syntax error: /ohshit credits add #");
+									}
+								}
+								else if (args[1].toUpperCase().equals("SET"))
+								{
+									if (args.length > 2)
+									{
+
+										if (player.hasPermission("ohshit.credits.adjust"))
+										{
+											setAvailableCredits(player, Integer.parseInt(args[2]));
+										}
+
+									}
+									else
+									{
+										messages.add(config.getString("prefix") + config.getString("prefix") + "syntax error: /ohshit credits set #");
 									}
 								}
 							}
-							messages.add(String.format(
-									config.getString("prefix") + config.getString("AVAILABLE_CREDITS_MESSAGE"),
-									getAvailableCredits(player)));
+							else
+							{
+								messages.add(String.format(config.getString("prefix") + config.getString("AVAILABLE_CREDITS_MESSAGE"), getAvailableCredits(player)));
+							}
 						}
 
 						/*
 						 * Claim unused credits
 						 */
-						if (args[0].toUpperCase().equals("CLAIM")) {
-							if (droppedItems != null) {
-								if (getAvailableCredits(player) > 0) {
-									for (ItemStack itemStack : droppedItems) {
+						else if (args[0].toUpperCase().equals("CLAIM"))
+						{
+							if (droppedItems != null)
+							{
+								if (getAvailableCredits(player) > 0)
+								{
+									for (ItemStack itemStack : droppedItems)
+									{
 										player.getInventory().addItem(itemStack);
 										messages.add(String.format(
-												config.getString("prefix")
-														+ config.getString("CREDITED_BACK_MESSAGE")
-														+ "\n",
+												config.getString("prefix") + config.getString("CREDITED_BACK_MESSAGE") + "\n",
 												itemStack.getType().toString(),
 												itemStack.getAmount()));
 									}
 									useAvailableCredit(player);
 									playerItems.remove(player);
-								} else {
-									messages.add(String.format(
-											config.getString("prefix") + config.getString("AVAILABLE_CREDITS_MESSAGE"),
-											getAvailableCredits(player)));
 								}
-							} else {
+								else
+								{
+									messages.add(String.format(config.getString("prefix") + config.getString("AVAILABLE_CREDITS_MESSAGE"), getAvailableCredits(player)));
+								}
+							}
+							else
+							{
 								messages.add(config.getString("prefix") + config.getString("NO_ITEMS_MESSAGE"));
 							}
 						}
 
-						if (!messages.isEmpty()) {
-							for (String message : messages) {
+						if (!messages.isEmpty())
+						{
+							for (String message : messages)
+							{
 								player.sendMessage(message);
 							}
 							return true;
@@ -206,43 +236,40 @@ public class OhSh_t extends JavaPlugin {
 		});
 
 		PluginDescriptionFile pdfFile = this.getDescription();
-		log.info(config.getString("prefix")
-				+ config.getString("prefix")
-				+ pdfFile.getName()
-				+ " version "
-				+ pdfFile.getVersion()
-				+ " is enabled!");
+		log.info(config.getString("prefix") + config.getString("prefix") + pdfFile.getName() + " version " + pdfFile.getVersion() + " is enabled!");
 	}
 
-	private void useAvailableCredit(Player player) {
+	private void useAvailableCredit(Player player)
+	{
 		String name = player.getName();
-		Credits creditClass = plugin.getDatabase().find(Credits.class).where().ieq("name", name)
-				.ieq("playerName", name).findUnique();
-		if (creditClass != null) {
+		Credits creditClass = plugin.getDatabase().find(Credits.class).where().ieq("name", name).ieq("playerName", name).findUnique();
+		if (creditClass != null)
+		{
 			creditClass.setCredits(creditClass.getCredits() - 1);
 			creditClass.setLastCredit(new Date());
 			plugin.getDatabase().save(creditClass);
-			player.getServer().broadcastMessage(
-					String.format(
-							config.getString("prefix") + config.getString("CREDITED_USED_MESSAGE"),
-							player.getName()));
+			player.getServer().broadcastMessage(String.format(config.getString("prefix") + config.getString("CREDITED_USED_MESSAGE"), player.getName()));
 		}
 	}
 
-	private int getAvailableCredits(Player player) {
+	private int getAvailableCredits(Player player)
+	{
 		String name = player.getName();
-		Credits creditClass = plugin.getDatabase().find(Credits.class).where().ieq("name", name)
-				.ieq("playerName", name).findUnique();
-		if (creditClass == null) {
+		Credits creditClass = plugin.getDatabase().find(Credits.class).where().ieq("name", name).ieq("playerName", name).findUnique();
+		if (creditClass == null)
+		{
 			creditClass = new Credits();
 			creditClass.setPlayer(player);
 			creditClass.setName(name);
 			creditClass.setCredits(Integer.parseInt(config.getString("credits", "1")));
 			plugin.getDatabase().save(creditClass);
-		} else if (creditClass.getCredits() == 0) {
+		}
+		else if (creditClass.getCredits() == 0)
+		{
 			Date lastCreditDate = creditClass.getLastCredit();
-			int days = (int) ((new Date().getTime() - lastCreditDate.getTime()) / (1000 * 60 * 60 * 24));
-			if (days >= 1) {
+			int duration = (int) ((new Date().getTime() - lastCreditDate.getTime()) / 1000);
+			if (duration >= config.getInt("frequency", 86400))
+			{
 				creditClass.setCredits(Integer.parseInt(config.getString("credits", "1")));
 				plugin.getDatabase().save(creditClass);
 			}
@@ -251,80 +278,90 @@ public class OhSh_t extends JavaPlugin {
 		return creditClass.getCredits();
 	}
 
-	private void addAvailableCredits(Player player, int count) {
+	private void addAvailableCredits(Player player, int count)
+	{
+		setAvailableCredits(player, getAvailableCredits(player) + count);
+	}
+
+	private void setAvailableCredits(Player player, int count)
+	{
 		String name = player.getName();
-		Credits creditClass = plugin.getDatabase().find(Credits.class).where().ieq("name", name)
-				.ieq("playerName", name).findUnique();
-		if (creditClass != null) {
-			creditClass.setCredits(creditClass.getCredits() + count);
+		Credits creditClass = plugin.getDatabase().find(Credits.class).where().ieq("name", name).ieq("playerName", name).findUnique();
+		if (creditClass != null)
+		{
+			creditClass.setCredits(count);
 			plugin.getDatabase().save(creditClass);
 		}
 	}
 
-	private void setupPermissions() {
-		Plugin p = this.getServer().getPluginManager().getPlugin("Permissions");
-		if (p != null) {
-			if (!this.getServer().getPluginManager().isPluginEnabled(p)) {
-				this.getServer().getPluginManager().enablePlugin(p);
-			}
-			this.permissions = (Permissions) p;
-		} else {
-			this.getPluginLoader().disablePlugin(this);
-		}
-	}
-
-	private void loadConfig() {
+	private void loadConfig()
+	{
 		config = this.getConfiguration();
-		for (Entry<String, String> entry : CONFIG_DEFAULTS.entrySet()) {
-			if (config.getProperty(entry.getKey()) == null) {
+		for (Entry<String, String> entry : CONFIG_DEFAULTS.entrySet())
+		{
+			if (config.getProperty(entry.getKey()) == null)
+			{
 				config.setProperty(entry.getKey(), entry.getValue());
 			}
 		}
 		config.save();
 	}
 
-	private void setupDatabase() {
-		try {
+	private void setupDatabase()
+	{
+		try
+		{
 			plugin.getDatabase().find(Credits.class).findRowCount();
-		} catch (PersistenceException ex) {
+		}
+		catch (PersistenceException ex)
+		{
 			System.out.println("Installing database for " + getDescription().getName() + " due to first time usage");
 			installDDL();
 		}
 	}
 
 	@Override
-	public List<Class<?>> getDatabaseClasses() {
+	public List<Class<?>> getDatabaseClasses()
+	{
 		List<Class<?>> list = new ArrayList<Class<?>>();
 		list.add(Credits.class);
 		return list;
 	}
 
-	private class EntityDeathListener extends EntityListener {
+	private class EntityDeathListener extends EntityListener
+	{
 		private IdentityHashMap<Player, String> lastDamagedBy = new IdentityHashMap<Player, String>();
 
 		/**
 		 * Count player damage delt and recieved.
 		 */
 		@Override
-		public void onEntityDamage(EntityDamageEvent event) {
+		public void onEntityDamage(EntityDamageEvent event)
+		{
 			// ****************************************************************
 			Player player = null;
 			String cause = null;
 			// ****************************************************************
 
-			if (event.getEntity() instanceof Player) {
+			if (event.getEntity() instanceof Player)
+			{
 				player = (Player) event.getEntity();
 
 				/**
 				 * Handle damage from blocks (cactus, lava)
 				 */
-				if (event instanceof EntityDamageByBlockEvent) {
+				if (event instanceof EntityDamageByBlockEvent)
+				{
 					EntityDamageByBlockEvent evt = (EntityDamageByBlockEvent) event;
-					if (evt.getDamager() != null) {
+					if (evt.getDamager() != null)
+					{
 						cause = evt.getDamager().getType().toString();
-					} else {
+					}
+					else
+					{
 						Material material = player.getLocation().getBlock().getType();
-						if (material == Material.LAVA || material == Material.STATIONARY_LAVA) {
+						if (material == Material.LAVA || material == Material.STATIONARY_LAVA)
+						{
 							cause = "LAVA";
 						}
 					}
@@ -333,35 +370,48 @@ public class OhSh_t extends JavaPlugin {
 				 * Count player damage from and to other living and undead
 				 * sources.
 				 */
-				else if (event instanceof EntityDamageByEntityEvent) {
+				else if (event instanceof EntityDamageByEntityEvent)
+				{
 					EntityDamageByEntityEvent evt = (EntityDamageByEntityEvent) event;
 
-					if (evt.getDamager() instanceof Monster) {
+					if (evt.getDamager() instanceof Monster)
+					{
 						cause = evt.getDamager().toString().replace("Craft", "");
-					} else if (evt.getDamager() instanceof Player) {
+					}
+					else if (evt.getDamager() instanceof Player)
+					{
 						cause = ((Player) evt.getDamager()).getName();
 					}
 				}
 				/**
 				 * Count player damage from and by projectiles (arrows).
 				 */
-				else if (event instanceof EntityDamageByProjectileEvent) {
+				else if (event instanceof EntityDamageByProjectileEvent)
+				{
 					EntityDamageByProjectileEvent evt = (EntityDamageByProjectileEvent) event;
 
-					if (evt.getDamager() instanceof Monster) {
+					if (evt.getDamager() instanceof Monster)
+					{
 						cause = evt.getDamager().toString().replace("Craft", "");
-					} else if (evt.getDamager() instanceof Player) {
+					}
+					else if (evt.getDamager() instanceof Player)
+					{
 						cause = ((Player) evt.getDamager()).getName();
 					}
-				} else if (event.getCause() == DamageCause.FIRE_TICK) {
+				}
+				else if (event.getCause() == DamageCause.FIRE_TICK)
+				{
 					cause = "FIRE";
-				} else {
+				}
+				else
+				{
 
 					cause = event.getCause().toString();
 				}
 
 				String configCause = config.getString(cause);
-				if (configCause != null) {
+				if (configCause != null)
+				{
 					cause = configCause;
 				}
 
@@ -369,32 +419,33 @@ public class OhSh_t extends JavaPlugin {
 			}
 		}
 
-		public void onEntityDeath(EntityDeathEvent event) {
+		public void onEntityDeath(EntityDeathEvent event)
+		{
 			Entity entity = event.getEntity();
 
-			if (entity instanceof Player) {
+			if (entity instanceof Player)
+			{
 				Player player = (Player) entity;
 				playerItems.put(player, event.getDrops());
 
 				String cause = lastDamagedBy.get(player);
-				for (Player otherPlayer : player.getWorld().getPlayers()) {
-					if (otherPlayer != player) {
+				for (Player otherPlayer : player.getWorld().getPlayers())
+				{
+					if (otherPlayer != player)
+					{
 						Integer distance = getDistance(player.getLocation(), otherPlayer.getLocation()).intValue();
-						otherPlayer.sendMessage(String.format(
-								config.getString("prefix") + config.getString("OTHER_PLAYER_DEATH_MESSAGE"),
-								player.getName(),
-								cause,
-								distance));
-					} else {
-						otherPlayer.sendMessage(String.format(
-								config.getString("prefix") + config.getString("PLAYER_DEATH_MESSAGE"),
-								cause));
+						otherPlayer.sendMessage(String.format(config.getString("prefix") + config.getString("OTHER_PLAYER_DEATH_MESSAGE"), player.getName(), cause, distance));
+					}
+					else
+					{
+						otherPlayer.sendMessage(String.format(config.getString("prefix") + config.getString("PLAYER_DEATH_MESSAGE"), cause));
 					}
 				}
 			}
 		}
 
-		private Double getDistance(Location l1, Location l2) {
+		private Double getDistance(Location l1, Location l2)
+		{
 			double x = Math.pow(l1.getX() - l2.getX(), 2);
 			double y = Math.pow(l1.getY() - l2.getY(), 2);
 			double z = Math.pow(l1.getZ() - l2.getZ(), 2);
