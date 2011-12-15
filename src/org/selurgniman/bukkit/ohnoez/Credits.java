@@ -3,10 +3,14 @@
  */
 package org.selurgniman.bukkit.ohnoez;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.bukkit.Bukkit;
@@ -22,32 +26,29 @@ public class Credits {
 
     @Id
     private int id;
-    @NotNull
+    
+    @Length(max=30)
+    @NotEmpty
     private String playerName;
-    @Length(max = 30)
-    @NotEmpty
-    private String name;
-
-    @NotEmpty
+    
+    @NotNull
     private Integer credits;
 
-
 	private Date lastCredit;
+	
+    @OneToMany(mappedBy="credit",cascade=CascadeType.ALL)
+	private List<Drop> drops;
 
+    public Credits(){
+    	this.drops=new ArrayList<Drop>();
+    }
+    
     public void setId(int id) {
         this.id = id;
     }
 
     public int getId() {
         return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getPlayerName() {
@@ -80,5 +81,13 @@ public class Credits {
 
 	public void setLastCredit(Date lastCredit) {
 		this.lastCredit = lastCredit;
+	}
+	
+	public List<Drop> getDrops() {
+		return drops;
+	}
+
+	public void setDrops(List<Drop> drops) {
+		this.drops = drops;
 	}
 }
