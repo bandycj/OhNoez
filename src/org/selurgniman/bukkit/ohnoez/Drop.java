@@ -32,8 +32,14 @@ public class Drop {
     
     @NotNull
     private Integer itemCount;
+    
+    @NotNull
+    private Integer itemData;
+    
+    @NotNull
+    private Integer itemDurability;
 
-    public Drop(){
+	public Drop(){
     	this(0,0);
     }
     
@@ -97,5 +103,33 @@ public class Drop {
 	 */
 	public void setItemCount(Integer itemCount) {
 		this.itemCount = itemCount;
+	}
+	
+    /**
+	 * @return the itemData
+	 */
+	public Integer getItemData() {
+		return itemData;
+	}
+
+	/**
+	 * @param itemData the itemData to set
+	 */
+	public void setItemData(Integer itemData) {
+		this.itemData = itemData;
+	}
+
+	/**
+	 * @return the itemDurability
+	 */
+	public Integer getItemDurability() {
+		return itemDurability;
+	}
+
+	/**
+	 * @param itemDurability the itemDurability to set
+	 */
+	public void setItemDurability(Integer itemDurability) {
+		this.itemDurability = itemDurability;
 	}
 }

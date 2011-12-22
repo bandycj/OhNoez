@@ -93,6 +93,7 @@ public class OhnoezCommandExecutor implements CommandExecutor {
 				}
 				messages.add(String.format(Message.LIST_ITEM_MESSAGE + "\n", itemTypeName, itemStack.getAmount()));
 			}
+			messages.add(String.format(Message.LIST_ITEM_MESSAGE + "\n", "Experience levels", model.getLastExperience(player)));
 		} else {
 			messages.add(Message.NO_ITEMS_MESSAGE + "\n");
 		}
@@ -128,14 +129,18 @@ public class OhnoezCommandExecutor implements CommandExecutor {
 	private List<String> claimCommand(Player player) {
 		List<String> messages = new ArrayList<String>();
 		List<ItemStack> droppedItems = model.getLastInventory(player);
+		Integer droppedExp = model.getLastExperience(player);
+		
 		if (droppedItems != null) {
 			if (model.getAvailableCredits(player) > 0) {
 				for (ItemStack itemStack : droppedItems) {
 					player.getInventory().addItem(itemStack);
 					messages.add(String.format(Message.CREDITED_BACK_MESSAGE + "\n", itemStack.getType().toString(), itemStack.getAmount()));
 				}
+				player.setLevel(player.getLevel()+droppedExp);
+				
 				model.useAvailableCredit(player);
-				model.setLastInventory(player, new ArrayList<ItemStack>());
+				model.setLastInventory(player, new ArrayList<ItemStack>(), 0);
 			} else {
 				messages.add(String.format(Message.AVAILABLE_CREDITS_MESSAGE + "\n", player.getName(), model.getAvailableCredits(player)));
 			}

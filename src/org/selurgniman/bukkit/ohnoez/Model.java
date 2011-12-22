@@ -88,12 +88,23 @@ public class Model {
 
 		return creditClass.getCredits();
 	}
-
+	public int getLastExperience(Player player){
+		Credits creditClass = getRecordForPlayer(player);
+		for (Drop drop : creditClass.getDrops()) {
+			if (drop.getItemId() == -2) {
+				return drop.getItemCount();
+			} 
+		}
+		
+		return 0;
+	}
 	public List<ItemStack> getLastInventory(Player player) {
 		Credits creditClass = getRecordForPlayer(player);
 		ArrayList<ItemStack> items = new ArrayList<ItemStack>();
 		for (Drop drop : creditClass.getDrops()) {
-			items.add(new ItemStack(Material.getMaterial(drop.getItemId()), drop.getItemCount()));
+			if (drop.getItemId() != -2) {
+				items.add(new ItemStack(Material.getMaterial(drop.getItemId()), drop.getItemCount(),drop.getItemDurability().shortValue(),drop.getItemData().byteValue()));
+			} 
 		}
 		return items;
 	}
@@ -109,19 +120,33 @@ public class Model {
 		database.save(creditClass);
 	}
 
-	public void setLastInventory(Player player, List<ItemStack> itemsList) {
+	public void setLastInventory(Player player, List<ItemStack> itemsList, Integer droppedExp) {
 		Credits creditClass = getRecordForPlayer(player);
 		ArrayList<Drop> drops = new ArrayList<Drop>();
+		Drop drop = new Drop();
+		drop.setItemId(-2);
+		System.out.println("level: "+player.getLevel()+":"+droppedExp);
+		drop.setItemCount(player.getLevel());
+		drop.setItemData(0);
+		drop.setItemDurability(0);
+		drop.setCredit(creditClass);
+		drops.add(drop);
+		
 		for (ItemStack item : itemsList) {
-			Drop drop = new Drop();
+			Byte data = item.getData().getData();
+			drop = new Drop();
 			drop.setItemId(item.getTypeId());
 			drop.setItemCount(item.getAmount());
+			drop.setItemData(data.intValue());
+			drop.setItemDurability(new Integer(item.getDurability()));
 			drop.setCredit(creditClass);
 			drops.add(drop);
 		}
 
 		database.save(drops);
 	}
+	
+	
 
 	private Credits getRecordForPlayer(Player player) {
 		String name = player.getName();

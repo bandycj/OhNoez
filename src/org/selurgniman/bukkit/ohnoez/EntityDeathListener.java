@@ -35,7 +35,8 @@ public class EntityDeathListener extends EntityListener
 		if (entity instanceof Player)
 		{
 			Player player = (Player) entity;
-			model.setLastInventory(player, event.getDrops());
+			model.setLastInventory(player, event.getDrops(), player.getLevel());
+			
 			String cause = getPlayerDamageCause(player.getLastDamageCause());
 			
 			for (Player otherPlayer : player.getWorld().getPlayers())
@@ -59,7 +60,7 @@ public class EntityDeathListener extends EntityListener
 		Player player = (Player) event.getEntity();
 		String cause = "";
 		// ****************************************************************
-
+		
 		if (event instanceof EntityDamageByBlockEvent)
 		{
 			EntityDamageByBlockEvent evt = (EntityDamageByBlockEvent) event;

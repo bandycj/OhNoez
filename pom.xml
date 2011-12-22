@@ -64,6 +64,33 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<configuration>
+					<artifactItems>
+						<artifactItem>
+							<groupId>${groupId}</groupId>
+							<artifactId>${artifactId}</artifactId>
+							<version>${version}</version>
+							<type>jar</type>
+							<overWrite>true</overWrite>
+							<outputDirectory>D:\minecraft_stuff\Minecraft_server\plugins</outputDirectory>
+							<destFileName>${artifactId}.jar</destFileName>
+						</artifactItem>
+					</artifactItems>
+					<!-- other configurations here -->
+				</configuration>
+				<executions>
+					<execution>
+						<id>build</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 	<repositories>
